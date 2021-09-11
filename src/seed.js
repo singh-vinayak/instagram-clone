@@ -39,12 +39,12 @@ export function seedDatabase(firebase) {
     ];
 
     for (let k = 0; k < users.length; k++) {
-        console.log('user added');
+        //console.log('user added');
         firebase.firestore().collection('users').add(users[k]);
     }
 
     for (let i = 1; i <= 5; ++i) {
-        console.log('photo added');
+        //console.log('photo added');
         firebase
             .firestore()
             .collection('photos')
