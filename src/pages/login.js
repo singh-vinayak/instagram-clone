@@ -1,13 +1,29 @@
-import React, {useState, useEffect} from 'react';
-import { Link } from 'react-router-dom';
+import React, {useState, useEffect, useContext} from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import * as ROUTES from '../constants/routes';
+import FirebaseContext from '../context/firebase'
 
 export default function Login() {
+    const history = useHistory();
+    const {firebase} = useContext(FirebaseContext)
     const [emailAddress, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
 
     const [error, setError] = useState('');
     const isInvalid = password === '' || emailAddress === '';
+
+    const handleLogin = async (event) => {
+        event.preventDefault();
+
+        try {
+            await firebase.auth().signInWithEmailAndPassword(emailAddress, password);
+            history.push(ROUTES.DASHBOARD);
+        } catch (error) {
+            setEmailAddress('');
+            setPassword('');
+            setError(error.message);
+        }
+    }
 
     useEffect(() => {
         document.title = 'Login - Instagram';
@@ -23,12 +39,14 @@ export default function Login() {
                     <h1 className="flex justify-center w-full">
                         <img src='/images/logo.png' alt="Instagram" className="mt-2 mb-4 w-6/12" />
                     </h1>
+                    {error && <p className="mb-4 text-xs text-red-500">{error}</p>}
 
-                    <form method="POST">
+                    <form onSubmit={handleLogin} method="POST">
                         <input
                             aria-label="Enter your email address"
                             className="text-sm w-full mr-3 py-5 px-4 mb-2 h-2 border rounded"
                             type="text"
+                            value={emailAddress}
                             placeholder="Email address"
                             onChange={(event)=> setEmailAddress(event.target.value)}
                         />
@@ -36,6 +54,7 @@ export default function Login() {
                             aria-label="Enter your password"
                             className="text-sm w-full mr-3 py-5 px-4 mb-2 h-2 border rounded"
                             type="password"
+                            value={password}
                             placeholder="Password"
                             onChange={(event) => setPassword(event.target.value)}
                         />
