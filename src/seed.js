@@ -4,7 +4,7 @@ export function seedDatabase(firebase) {
             userId: 'BKbblHCWu8Nv78aFsw9A9ZgWzqv2',
             username: 'vinayak',
             fullName: 'Vinayak Singh',
-            emailAddress: 'vinayaksingh@gmail.com',
+            emailAddress: 'vinayaksingh5302@gmail.com',
             following: ['2'],
             followers: ['2', '3', '4'],
             dateCreated: Date.now()
@@ -20,7 +20,7 @@ export function seedDatabase(firebase) {
         },
         {
             userId: '3',
-            username: 'Riya',
+            username: 'riya',
             fullName: 'Riya',
             emailAddress: 'ry@yahoo.com',
             following: [],
@@ -29,7 +29,7 @@ export function seedDatabase(firebase) {
         },
         {
             userId: '4',
-            username: 'Anurag',
+            username: 'anurag',
             fullName: 'Anurag Singh',
             emailAddress: 'anuj@outlook.com',
             following: [],
@@ -56,11 +56,11 @@ export function seedDatabase(firebase) {
                 likes: [],
                 comments: [
                     {
-                        displayName: 'Riya',
+                        displayName: 'riya',
                         comment: 'Love this place, looks like my animal farm!'
                     },
                     {
-                        displayName: 'Anurag',
+                        displayName: 'anurag',
                         comment: 'Would you mind if I used this picture?'
                     }
                 ],

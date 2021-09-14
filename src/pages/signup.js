@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import FirebaseContext from '../context/firebase';
 import * as ROUTES from '../constants/routes';
 import { doesUsernameExist } from '../services/firebase';
 
 export default function SignUp() {
-     const history=useHistory();
+    const history = useHistory();
     const { firebase } = useContext(FirebaseContext);
 
     const [username, setUsername] = useState('');
@@ -19,36 +19,33 @@ export default function SignUp() {
     const handleSignUp = async (event) => {
         event.preventDefault();
 
-        const usernameExists = await doesUsernameExist(username);
-        if (!usernameExists.length) {
+        const doesUsernameExistResult = await doesUsernameExist(username);
+        if (doesUsernameExistResult && doesUsernameExistResult.length === 0) {
             try {
                 const createdUserResult = await firebase.auth().createUserWithEmailAndPassword(emailAddress, password);
-                
+
                 await createdUserResult.user.updateProfile({
                     displayName: username
                 });
-                
+
                 await firebase.firestore().collection('users').add({
                     userId: createdUserResult.user.uid,
                     username: username.toLowerCase(),
                     fullName,
                     emailAddress: emailAddress.toLowerCase(),
                     following: [],
-                    followers: [],
                     dateCreated: Date.now()
                 });
 
                 history.push(ROUTES.DASHBOARD);
             } catch (error) {
                 setFullName('');
+                setEmailAddress('');
+                setPassword('');
                 setError(error.message);
             }
         } else {
-            setUsername('');
-            setFullName('');
-            setEmailAddress('');
-            setPassword('');
-            setError('That username is already taken, please try another!')
+            setError('That username is already taken, please try another.');
         }
     }
 
@@ -72,7 +69,7 @@ export default function SignUp() {
                             type="text"
                             placeholder="Username"
                             value={username}
-                            onChange={({ target }) => setUsername(target.value.toLowerCase().trim())}
+                            onChange={({ target }) => setUsername(target.value.toLowerCase())}
                         />
                         <input
                             aria-label="Enter your full name"
@@ -80,7 +77,7 @@ export default function SignUp() {
                             type="text"
                             placeholder="Full name"
                             value={fullName}
-                            onChange={({ target }) => setFullName(target.value.trim())}
+                            onChange={({ target }) => setFullName(target.value)}
                         />
                         <input
                             aria-label="Enter your email address"
@@ -88,7 +85,7 @@ export default function SignUp() {
                             type="text"
                             placeholder="Email address"
                             value={emailAddress}
-                            onChange={({ target }) => setEmailAddress(target.value.toLowerCase().trim())}
+                            onChange={({ target }) => setEmailAddress(target.value.toLowerCase())}
                         />
                         <input
                             aria-label="Enter your password"
