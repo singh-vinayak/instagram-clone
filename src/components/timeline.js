@@ -6,6 +6,12 @@ import Post from './post/index'
 export default function Timeline() {
     const { photos } = useFollowedUsersPhotos();
 
+    // return(
+    //     <div className="container col-span-2">
+    //         Photos here
+    //     </div>
+    // )
+
     return (
         <div className="container col-span-2">
             {!photos ? (
