@@ -10,7 +10,7 @@ export default function Photos({ photos }) {
             <div className="grid grid-cols-3 gap-4 mt-4 mb-12">
                 {!photos ? (
                     <>
-                        {[...new Array(photos.length)].map((_, index) => (
+                        {[...new Array(9)].map((_, index) => (
                             <Skeleton key={index} count={1} width={320} height={400} />
                         ))}
                     </>
