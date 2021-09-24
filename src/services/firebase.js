@@ -1,5 +1,21 @@
 import { firebase, FieldValue } from '../lib/firebase';
 
+export async function isUserFollowingProfile(activeUsername, profileUserId) {
+    const result = await firebase
+        .firestore()
+        .collection('users')
+        .where('username', '==', activeUsername) // karl (active logged in user)
+        .where('following', 'array-contains', profileUserId)
+        .get();
+
+    const [response = {}] = result.docs.map((item) => ({
+        ...item.data(),
+        docId: item.id
+    }));
+
+    return !!response.fullName;
+}
+
 export async function doesUsernameExist(username) {
     const result = await firebase
         .firestore()
@@ -45,23 +61,12 @@ export async function getUserFollowedPhotos(userId, followingUserIds) {
             }
             const user = await getUserByUserId(photo.userId);
             const username = user[0].username;
-            //console.log(username);
             return { username, ...photo, userLikedPhoto };
         })
     );
+
     return photosWithUserDetails;
 }
-
-// export async function getSuggestedProfiles(userId){
-//     const result = await firebase.firestore().collection('users').limit(10).get();
-//     const [{ following: userFollowing = [] }] = result.docs
-//         .map((user) => user.data())
-//         .filter((profile) => profile.userId === userId);
-
-//     return result.docs
-//         .map((user) => ({ ...user.data(), docId: user.id }))
-//         .filter((profile) => profile.userId !== userId && !userFollowing.includes(profile.userId));
-// }
 
 export async function getSuggestedProfiles(userId) {
     const result = await firebase.firestore().collection('users').limit(10).get();
@@ -90,13 +95,13 @@ export async function updateFollowedUserFollowers(docId, followingUserId, isFoll
         .collection('users')
         .doc(docId)
         .update({
-            following: isFollowingProfile
+            followers: isFollowingProfile
                 ? FieldValue.arrayRemove(followingUserId)
                 : FieldValue.arrayUnion(followingUserId)
         });
 }
 
-export async function getUserByUsername(username) { 
+export async function getUserByUsername(username) {
     const result = await firebase
         .firestore()
         .collection('users')
@@ -108,7 +113,7 @@ export async function getUserByUsername(username) {
         docId: item.id
     }));
 
-    return user.length>0 ? user:false;
+    return user.length > 0 ? user : false;
 }
 
 export async function getUserIdByUsername(username) {
@@ -139,4 +144,15 @@ export async function getUserPhotosByUsername(username) {
     }));
 
     return photos;
+}
+
+export async function toggleFollow(
+    isFollowingProfile,
+    activeUserDocId,
+    profileDocId,
+    profileId,
+    followingUserId
+) {
+    await updateUserFollowing(activeUserDocId, profileId, isFollowingProfile);
+    await updateFollowedUserFollowers(profileDocId, followingUserId, isFollowingProfile);
 }
